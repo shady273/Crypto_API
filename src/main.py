@@ -1,3 +1,4 @@
+import asyncio
 import os
 import uvicorn
 from fastapi import FastAPI
@@ -24,6 +25,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 if __name__ == "__main__":
     uvicorn.run('main:app', host=config.app_host, port=config.app_port, reload=config.reload)
