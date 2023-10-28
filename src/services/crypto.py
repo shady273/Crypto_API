@@ -46,7 +46,12 @@ class CryptoServices:
         self.logger = logging.getLogger("root")
 
     async def update_crypto(self):
-        self.logger.info(f"Crypto data update")
-        data_list = self.cg.get_coins_markets(order='market_cap_desc', per_page=2, vs_currency='usd',
+        data_list = self.cg.get_coins_markets(order='market_cap_desc', per_page=250, vs_currency='usd',
                                               price_change_percentage='1h,24h,7d,30d,1y', locale='en')
-        await self.crypto_repo.add_many(convert_to_crypto_data(data_list))
+        check_data = await self.crypto_repo.check_data_existence(convert_to_crypto_data(data_list))
+        if check_data is None:
+            await self.crypto_repo.add_many(convert_to_crypto_data(data_list))
+            self.logger.info(f"Crypto data add")
+        else:
+            await self.crypto_repo.update_many(convert_to_crypto_data(data_list))
+            self.logger.info(f"Crypto data update")
